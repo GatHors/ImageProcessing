@@ -1,0 +1,26 @@
+Spawned 1map tasks
+HibRecordReader#initialize: Input split starts at byte offset 0 and ends at byte offset 3132775
+image to extract:Mat [ 2448*2448*CV_8UC1, isCont=true, isSubmat=false, nativeObj=0x1028cd0, dataAddr=0x7f44b6f12020 ]
+keypoints:Mat [ 30374*1*CV_32FC(7), isCont=true, isSubmat=false, nativeObj=0x100ec50, dataAddr=0x10cb440 ]
+descriptor:Mat [ 30374*128*CV_32FC1, isCont=true, isSubmat=false, nativeObj=0x1028d40, dataAddr=0x161b54a0 ]
+mat(float,color):Mat [ 2448*2448*CV_32FC3, isCont=true, isSubmat=false, nativeObj=0x10009a0, dataAddr=0x7f44b8ba7020 ]
+mat(float,gray):Mat [ 2448*2448*CV_32FC1, isCont=true, isSubmat=false, nativeObj=0x1008ab0, dataAddr=0x7f44b74ca020 ]
+mat(byte,gray):Mat [ 2448*2448*CV_8UC1, isCont=true, isSubmat=false, nativeObj=0x1028cd0, dataAddr=0x7f44b6f12020 ]
+mat_features:Mat [ 30374*128*CV_32FC1, isCont=true, isSubmat=false, nativeObj=0x1028d40, dataAddr=0x161b54a0 ]
+
+image to extract:Mat [ 2448*3264*CV_8UC1, isCont=true, isSubmat=false, nativeObj=0x1008ab0, dataAddr=0x10e1260 ]
+keypoints:Mat [ 3846*1*CV_32FC(7), isCont=true, isSubmat=false, nativeObj=0x1028d40, dataAddr=0x187fe90 ]
+descriptor:Mat [ 3846*128*CV_32FC1, isCont=true, isSubmat=false, nativeObj=0x1028cd0, dataAddr=0x1d7bb2e0 ]
+mat(float,color):Mat [ 2448*3264*CV_32FC3, isCont=true, isSubmat=false, nativeObj=0x10009a0, dataAddr=0x7f44b74ca020 ]
+mat(float,gray):Mat [ 2448*3264*CV_32FC1, isCont=true, isSubmat=false, nativeObj=0xff6aa0, dataAddr=0x7f44b4f95020 ]
+mat(byte,gray):Mat [ 2448*3264*CV_8UC1, isCont=true, isSubmat=false, nativeObj=0x1008ab0, dataAddr=0x10e1260 ]
+mat_features:Mat [ 3846*128*CV_32FC1, isCont=true, isSubmat=false, nativeObj=0x1028cd0, dataAddr=0x1d7bb2e0 ]
+
+image to extract:Mat [ 1322*1389*CV_8UC1, isCont=true, isSubmat=false, nativeObj=0xff6000, dataAddr=0x348cd40 ]
+keypoints:Mat [ 3461*1*CV_32FC(7), isCont=true, isSubmat=false, nativeObj=0x10df050, dataAddr=0x1d16e790 ]
+descriptor:Mat [ 3461*128*CV_32FC1, isCont=true, isSubmat=false, nativeObj=0xff6070, dataAddr=0x1cb193a0 ]
+mat(float,color):Mat [ 1322*1389*CV_32FC3, isCont=true, isSubmat=false, nativeObj=0x1028d40, dataAddr=0x1887ed0 ]
+mat(float,gray):Mat [ 1322*1389*CV_32FC1, isCont=true, isSubmat=false, nativeObj=0x10d1bb0, dataAddr=0x2d8b990 ]
+mat(byte,gray):Mat [ 1322*1389*CV_8UC1, isCont=true, isSubmat=false, nativeObj=0xff6000, dataAddr=0x348cd40 ]
+mat_features:Mat [ 3461*128*CV_32FC1, isCont=true, isSubmat=false, nativeObj=0xff6070, dataAddr=0x1cb193a0 ]
+

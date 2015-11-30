@@ -1,0 +1,28 @@
+current filename:test.jpg
+image to extract:Mat [ 189*266*CV_8UC1, isCont=true, isSubmat=false, nativeObj=0x7f87d0d7db60, dataAddr=0x7f87d1a68380 ]
+keypoints:Mat [ 206*1*CV_32FC(7), isCont=true, isSubmat=false, nativeObj=0x7f87d1a38120, dataAddr=0x7f87d1a391c0 ]
+descriptor:Mat [ 206*128*CV_32FC1, isCont=true, isSubmat=false, nativeObj=0x7f87d1a38040, dataAddr=0x7f87d24f3f70 ]
+----------------------------------Extracting the query image feature...
+query_mat(float,color):Mat [ 189*266*CV_8UC3, isCont=true, isSubmat=false, nativeObj=0x7f87d0bf9210, dataAddr=0x7f87d1a01310 ]
+query_mat(float,gray):Mat [ 189*266*CV_8UC1, isCont=true, isSubmat=false, nativeObj=0x7f87d0bf9280, dataAddr=0x7f87d1a5bef0 ]
+query_mat(byte,gray):Mat [ 189*266*CV_8UC1, isCont=true, isSubmat=false, nativeObj=0x7f87d0d7db60, dataAddr=0x7f87d1a68380 ]
+query_mat_features:Mat [ 206*128*CV_32FC1, isCont=true, isSubmat=false, nativeObj=0x7f87d1a38040, dataAddr=0x7f87d24f3f70 ]
+
+----------------------------------Generating the feature file for the query image in HDFS...
+----------------------------------Query feature extraction finished...
+
+current_record_feature:Mat [ 30374*128*CV_32FC1, isCont=true, isSubmat=false, nativeObj=0x7f87c437dce0, dataAddr=0x7f87affd3020 ]
+query_feature:Mat [ 206*128*CV_32FC1, isCont=true, isSubmat=false, nativeObj=0x7f87c43cbe00, dataAddr=0x7f87c41e1fc0 ]
+min_dist of keypoints:66.74578857421875  max_dist of keypoints:395.0544128417969
+current_record_filename: fullsizerender.jpg --- ratio: 0.048544   total_matches: 206    good_matches: 10
+
+current_record_feature:Mat [ 3846*128*CV_32FC1, isCont=true, isSubmat=false, nativeObj=0x7f87c43cbcc0, dataAddr=0x7f87c4503650 ]
+query_feature:Mat [ 206*128*CV_32FC1, isCont=true, isSubmat=false, nativeObj=0x7f87c43cbe00, dataAddr=0x7f87c41e1fc0 ]
+min_dist of keypoints:71.3582534790039  max_dist of keypoints:428.9044189453125
+current_record_filename: img_2215.jpg --- ratio: 0.038835   total_matches: 206    good_matches: 8
+
+current_record_feature:Mat [ 3461*128*CV_32FC1, isCont=true, isSubmat=false, nativeObj=0x7f87c43cb9f0, dataAddr=0x7f87c46e4280 ]
+query_feature:Mat [ 206*128*CV_32FC1, isCont=true, isSubmat=false, nativeObj=0x7f87c431f580, dataAddr=0x7f87c44d0d80 ]
+min_dist of keypoints:60.099918365478516  max_dist of keypoints:415.07470703125
+current_record_filename: combinetest.jpg --- ratio: 0.368932   total_matches: 206    good_matches: 76
+

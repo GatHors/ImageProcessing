@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+
+<!-- Put site-specific property overrides in this file. -->
+
+<configuration>
+ <property>
+  <name>mapred.job.tracker</name>
+  <value>master:9010</value>
+ </property>
+ <property>
+  <!-- hadoop的日志输出指定目录-->
+  <name>mapred.local.dir</name>
+  <value>$HADOOP_HOME/mylogs</value>
+ </property>
+</configuration>

@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Main-Class: org.cloudcomputing.imageProcessing.FeatureExtraction
+Class-Path: /home/gathors/proj/v-opencv/FeatureExtraction/libs/opencv-
+ 2412.jar
+
