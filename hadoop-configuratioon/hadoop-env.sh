@@ -8,9 +8,8 @@
 # The java implementation to use.  Required.
 export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64/
 
-
 # Extra Java CLASSPATH elements.  Optional.
-export HADOOP_CLASSPATH=$HADOOP_CLASSPATH:/home/gathors/hipi/core/build/libs/hipi-2.1.0.jar:$HADOOP_HOME/share/hadoop/httpfs/tomcat/webapps/webhdfs/WEB-INF/lib/json-simple-1.1.jar:/home/gathors/hipi/release/hipi-2.0.jar:/home/gathors/proj/v-opencv/FeatureExtraction/libs
+export HADOOP_CLASSPATH=$HADOOP_CLASSPATH:/home/gathors/hipi/core/build/libs/hipi-2.1.0.jar:$HADOOP_HOME/share/hadoop/httpfs/tomcat/webapps/webhdfs/WEB-INF/lib/json-simple-1.1.jar:/home/gathors/hipi/release/hipi-2.0.jar:~/opencv-3.0.0/build/bin/opencv-300.jar
 
 # The maximum amount of heap to use, in MB. Default is 1000.
 # export HADOOP_HEAPSIZE=2000

@@ -6,7 +6,7 @@
 <configuration>
  <property>
   <name>mapred.job.tracker</name>
-  <value>master:9010</value>
+  <value>master:54311</value>
  </property>
  <property>
   <!-- hadoop的日志输出指定目录-->
