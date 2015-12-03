@@ -40,7 +40,7 @@ public class FeatureMatching extends Configured implements Tool {
     private static final String PREFIX = "----------------------------------";
 
     private static final double THRESHOLD_FACTOR = 0.4;
-    private static final double PERCENTAGE_THRESHOLD = 0.4;
+    private static final double PERCENTAGE_THRESHOLD = 0.1;
     private static final IntWritable ONE = new IntWritable(1);
 
 
