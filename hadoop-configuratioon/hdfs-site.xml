@@ -12,4 +12,7 @@
      <name>dfs.data.dir</name>
      <value>/usr/hadoop/hdfs</value>
  </property>
+ <property>
+     <name>dfs.permissions</name>
+     <value>false</value>
 </configuration>
