@@ -7,5 +7,5 @@
 #!/bin/bash
 ./clean.sh
 gradle build
-hadoop jar build/libs/FeatureMatching.jar Peng test.jpg > out.log
+hadoop jar build/libs/FeatureMatching.jar Peng request.jpg > out.log
 #cat out.log

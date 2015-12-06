@@ -6,7 +6,9 @@ import com.google.gson.JsonObject;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.NullWritable;
+import org.apache.hadoop.mapreduce.Counters;
 import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.JobCounter;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
@@ -45,9 +47,6 @@ public class FeatureExtraction extends Configured implements Tool {
     public static final String INPUT = "/input";
 
     public static final int FACTOR = 10;
-
-    private String inputPathStr, outputPathStr;
-
 
     private static int[][] openCVTypeLUT = new int[][]
             {{CvType.CV_8UC1, CvType.CV_8UC2, CvType.CV_8UC3, CvType.CV_8UC4},
@@ -211,6 +210,7 @@ public class FeatureExtraction extends Configured implements Tool {
                 // Key: filename            Value: json-type feature(String)
                 context.write(new Text(filename), new Text(mat2json(descriptor) + "\n"));
 
+                System.out.println("filename:"+filename);
                 System.out.println("mat(float,color):"+image_float);
                 System.out.println("mat(float,gray):" + image_gray);
                 System.out.println("mat(byte,gray):"+image_byte);
@@ -233,8 +233,8 @@ public class FeatureExtraction extends Configured implements Tool {
 
         Job job = Job.getInstance();
 
-        inputPathStr = HDFS_HOME+ADMIN+INPUT+"/"+args[0];
-        outputPathStr = HDFS_HOME+FEATURES+"/"+time;
+        String inputPathStr = HDFS_HOME+ADMIN+INPUT+"/"+args[0];
+        String outputPathStr = HDFS_HOME+FEATURES+"/"+time;
 
         job.setInputFormatClass(HibInputFormat.class);
         job.setOutputFormatClass(TextOutputFormat.class);

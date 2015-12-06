@@ -62,6 +62,16 @@ public class FeatureMatching extends Configured implements Tool {
         }
         JsonObject jobj = parser.parse(json).getAsJsonObject();
 
+        if (jobj == null || !jobj.isJsonObject() || jobj.isJsonNull()) {
+            return null;
+        }
+
+        // Detect broken/null features
+        JsonElement r = jobj.get("rows");
+        if (r == null) {
+            return null;
+        }
+
         int rows = jobj.get("rows").getAsInt();
         int cols = jobj.get("cols").getAsInt();
         int type = jobj.get("type").getAsInt();
@@ -140,70 +150,76 @@ public class FeatureMatching extends Configured implements Tool {
 
                 // Change the json-type feature to Mat-type feature
                 Mat descriptor = json2mat(json);
+                if (descriptor != null) {
 
-                // Read the query feature from the cache in Hadoop
-                Mat query_features;
-                String pathStr = context.getConfiguration().get("featureFilePath");
-                FileSystem fs = FileSystem.get(context.getConfiguration());
-                FSDataInputStream fsDataInputStream = fs.open(new Path(pathStr));
-                Scanner sc = new Scanner(fsDataInputStream, "UTF-8");
-                StringBuilder sb = new StringBuilder();
-                while(sc.hasNextLine()) {
-                    sb.append(sc.nextLine());
-                }
-                String query_json = sb.toString();
-                fsDataInputStream.close();
+                    // Read the query feature from the cache in Hadoop
+                    Mat query_features;
+                    String pathStr = context.getConfiguration().get("featureFilePath");
+                    FileSystem fs = FileSystem.get(context.getConfiguration());
+                    FSDataInputStream fsDataInputStream = fs.open(new Path(pathStr));
+                    Scanner sc = new Scanner(fsDataInputStream, "UTF-8");
+                    StringBuilder sb = new StringBuilder();
+                    while (sc.hasNextLine()) {
+                        sb.append(sc.nextLine());
+                    }
+                    String query_json = sb.toString();
+                    fsDataInputStream.close();
 //                System.out.println("query_json:"+query_json);
-                query_features = json2mat(query_json);
+                    query_features = json2mat(query_json);
 
-                // Get the similarity of the current database image against the query image
-                DescriptorMatcher matcher = DescriptorMatcher.create(DescriptorMatcher.FLANNBASED);
-                MatOfDMatch matches = new MatOfDMatch();
-                System.out.println("current_record_feature:" + descriptor + "\nquery_feature:" + query_features);
+                    // Get the similarity of the current database image against the query image
+                    DescriptorMatcher matcher = DescriptorMatcher.create(DescriptorMatcher.FLANNBASED);
+                    MatOfDMatch matches = new MatOfDMatch();
+                    System.out.println("current_record_feature:" + descriptor + "\nquery_feature:" + query_features);
 
-                // Ensure the two features have same length of cols (the feature extracted are all 128 cols(at least in this case))
-                if (query_features.cols() == descriptor.cols()) {
+                    // Ensure the two features have same length of cols (the feature extracted are all 128 cols(at least in this case))
+                    if (query_features.cols() == descriptor.cols()) {
 
-                    matcher.match(query_features, descriptor, matches);
-                    DMatch[] dMatches = matches.toArray();
+                        matcher.match(query_features, descriptor, matches);
+                        DMatch[] dMatches = matches.toArray();
 
-                    // Calculate the max/min distances
+                        // Calculate the max/min distances
 //                    double max_dist = Double.MAX_VALUE;
 //                    double min_dist = Double.MIN_VALUE;
-                    double max_dist = 0;
-                    double min_dist = 100;
-                    for (int i = 0; i < dMatches.length; i++) {
-                        double dist = dMatches[i].distance;
-                        if (min_dist > dist) min_dist = dist;
-                        if (max_dist < dist) max_dist = dist;
-                    }
-                    System.out.println("min_dist of keypoints:" + min_dist + "  max_dist of keypoints:" + max_dist);
-                    // Only distances ≤ threshold are good matches
-                    double threshold = max_dist * THRESHOLD_FACTOR;
-//                    double threshold = min_dist * 2;
-                    LinkedList<DMatch> goodMatches = new LinkedList<DMatch>();
-
-                    for (int i = 0; i < dMatches.length; i++) {
-                        if (dMatches[i].distance <= threshold) {
-                            goodMatches.addLast(dMatches[i]);
+                        double max_dist = 0;
+                        double min_dist = 100;
+                        for (int i = 0; i < dMatches.length; i++) {
+                            double dist = dMatches[i].distance;
+                            if (min_dist > dist) min_dist = dist;
+                            if (max_dist < dist) max_dist = dist;
                         }
-                    }
+                        System.out.println("min_dist of keypoints:" + min_dist + "  max_dist of keypoints:" + max_dist);
+                        // Only distances ≤ threshold are good matches
+                        double threshold = max_dist * THRESHOLD_FACTOR;
+//                    double threshold = min_dist * 2;
+                        LinkedList<DMatch> goodMatches = new LinkedList<DMatch>();
 
-                    // Get the ratio of good_matches to all_matches
-                    double ratio = (double) goodMatches.size() / (double) dMatches.length;
-                    System.out.printf("current_record_filename: %s --- ratio: %f   total_matches: %d    good_matches: %d\n",
-                            filename, ratio, dMatches.length, goodMatches.size());
+                        for (int i = 0; i < dMatches.length; i++) {
+                            if (dMatches[i].distance <= threshold) {
+                                goodMatches.addLast(dMatches[i]);
+                            }
+                        }
+
+                        // Get the ratio of good_matches to all_matches
+                        double ratio = (double) goodMatches.size() / (double) dMatches.length;
+                        System.out.printf("current_record_filename: %s --- ratio: %f   total_matches: %d    good_matches: %d\n",
+                                filename, ratio, dMatches.length, goodMatches.size());
 //                    System.out.println("type:" + descriptor.type() + " channels:" + descriptor.channels() + " rows:" + descriptor.rows() + " cols:" + descriptor.cols());
 //                    System.out.println("qtype:" + query_features.type() + " qchannels:" + query_features.channels() + " qrows:" + query_features.rows() + " qcols:" + query_features.cols());
-                    System.out.println();
+                        System.out.println();
 
-                    if (ratio > PERCENTAGE_THRESHOLD) {
-                        // Key:1        Value:filename|ratio
-                        context.write(ONE, new Text(filename + "|" + ratio));
+                        if (ratio > PERCENTAGE_THRESHOLD) {
+                            // Key:1        Value:filename|ratio
+                            context.write(ONE, new Text(filename + "|" + ratio));
 //                        context.write(ONE, new Text(filename + "|" + String.valueOf(goodMatches.size())));
+                        }
+                    } else {
+                        System.out.println("The size of the features are not equal");
                     }
                 } else {
-                    System.out.println("The size of the features are not equal");
+                    // a null pointer, do nothing
+                    System.out.println("A broken/null feature:"+filename);
+                    System.out.println();
                 }
             }
         }
