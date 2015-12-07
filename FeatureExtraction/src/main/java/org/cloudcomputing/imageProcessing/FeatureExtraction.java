@@ -150,6 +150,7 @@ public class FeatureExtraction extends Configured implements Tool {
                     builder.append(pix[0]+",");
                 }
             }
+            builder.deleteCharAt(builder.lastIndexOf(","));
 
             jobj.addProperty("rows", mat.rows());
             jobj.addProperty("cols", mat.cols());

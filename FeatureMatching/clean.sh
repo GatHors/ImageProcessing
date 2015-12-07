@@ -7,5 +7,5 @@
 #!/bin/bash
 rm out.log
 rm features.log
-hadoop fs -rm -r user/zx/output/*
-hadoop fs -rm -r user/zx/input/*
+hadoop fs -rm -r user/Peng/output/*
+hadoop fs -rm -r user/Peng/input/*

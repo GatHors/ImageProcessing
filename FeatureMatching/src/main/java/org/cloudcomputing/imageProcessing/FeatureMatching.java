@@ -18,6 +18,7 @@ import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.util.Tool;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -38,11 +39,11 @@ public class FeatureMatching extends Configured implements Tool {
     private static final String OUTPUT = "/output";
     private static final String LOCAL_USER_DIR = "/home/gathors/proj/v-opencv/user";
     private static final String PREFIX = "----------------------------------";
+    private static final int BUF_SIZE = 30240;  // Buffer size to read the query_feature
 
     private static final double THRESHOLD_FACTOR = 0.4;
     private static final double PERCENTAGE_THRESHOLD = 0.1;
     private static final IntWritable ONE = new IntWritable(1);
-
 
     private static String ID;
 
@@ -99,12 +100,11 @@ public class FeatureMatching extends Configured implements Tool {
         // Convert the float type to unsigned integer(required by SIFT)
         Mat query_mat_byte = new Mat();
         query_gray.convertTo(query_mat_byte, CvType.CV_8UC3);
-//        System.out.println("quert_mat_byte:"+query_mat_float);
-        // Resize the image to 1/FACTOR both width and height
+//        // Resize the image to 1/FACTOR both width and height
 //        Mat query_mat_byte = FeatureExtraction.resize(query_mat_byte);
+
         // Extract the feature from the (Mat)image
         Mat query_features = FeatureExtraction.extractFeature(query_mat_byte);
-//        query_features = FeatureExtraction.extractFeature(query_mat_float);
 
         System.out.println(PREFIX+"Extracting the query image feature...");
         System.out.println("query_mat(float,color):"+query_mat_float);
@@ -118,7 +118,7 @@ public class FeatureMatching extends Configured implements Tool {
         FileSystem fs = FileSystem.get(job.getConfiguration());
         String featureFileName = filename.substring(0, filename.lastIndexOf("."))+".json";
         FSDataOutputStream fsDataOutputStream = fs.create(new Path(HDFS_HOME+USER+ID+INPUT+"/"+featureFileName));
-        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fsDataOutputStream));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fsDataOutputStream, StandardCharsets.UTF_8));
         bw.write(FeatureExtraction.mat2json(query_features));
         bw.close();
         System.out.println(PREFIX+"Query feature extraction finished...");
@@ -142,35 +142,51 @@ public class FeatureMatching extends Configured implements Tool {
             }
         }
 
-        public void map(Text key, Text value, Context context) throws IOException, InterruptedException {
+        public void map(Text key, Text value, Context context) throws InterruptedException, IOException {
 
             String filename = key.toString();
             String json = value.toString();
+
+            // Make sure the input is valid
             if ( ! (filename.isEmpty() || json.isEmpty()) ) {
 
                 // Change the json-type feature to Mat-type feature
                 Mat descriptor = json2mat(json);
                 if (descriptor != null) {
-
                     // Read the query feature from the cache in Hadoop
                     Mat query_features;
                     String pathStr = context.getConfiguration().get("featureFilePath");
                     FileSystem fs = FileSystem.get(context.getConfiguration());
                     FSDataInputStream fsDataInputStream = fs.open(new Path(pathStr));
-                    Scanner sc = new Scanner(fsDataInputStream, "UTF-8");
                     StringBuilder sb = new StringBuilder();
-                    while (sc.hasNextLine()) {
-                        sb.append(sc.nextLine());
+
+                    // Use a buffer to read the query_feature
+                    int remain = fsDataInputStream.available();
+                    while (remain > 0) {
+                        int read;
+                        byte[] buf = new byte[BUF_SIZE];
+                        read = fsDataInputStream.read(buf, fsDataInputStream.available() - remain, BUF_SIZE);
+                        sb.append(new String(buf, 0, read, StandardCharsets.UTF_8));
+                        remain = remain - read;
+                        System.out.println("remain:"+remain+"\tread:"+read+"\tsb.size:"+sb.length());
                     }
+
+                    // Read the query_feature line by line
+//                    Scanner sc = new Scanner(fsDataInputStream, "UTF-8");
+//                    StringBuilder sb = new StringBuilder();
+//                    while (sc.hasNextLine()) {
+//                        sb.append(sc.nextLine());
+//                    }
+//                    String query_json = sb.toString();
+//                    String query_json = new String(buf, StandardCharsets.UTF_8);
+
                     String query_json = sb.toString();
                     fsDataInputStream.close();
-//                System.out.println("query_json:"+query_json);
                     query_features = json2mat(query_json);
 
                     // Get the similarity of the current database image against the query image
                     DescriptorMatcher matcher = DescriptorMatcher.create(DescriptorMatcher.FLANNBASED);
                     MatOfDMatch matches = new MatOfDMatch();
-                    System.out.println("current_record_feature:" + descriptor + "\nquery_feature:" + query_features);
 
                     // Ensure the two features have same length of cols (the feature extracted are all 128 cols(at least in this case))
                     if (query_features.cols() == descriptor.cols()) {
@@ -188,7 +204,6 @@ public class FeatureMatching extends Configured implements Tool {
                             if (min_dist > dist) min_dist = dist;
                             if (max_dist < dist) max_dist = dist;
                         }
-                        System.out.println("min_dist of keypoints:" + min_dist + "  max_dist of keypoints:" + max_dist);
                         // Only distances ≤ threshold are good matches
                         double threshold = max_dist * THRESHOLD_FACTOR;
 //                    double threshold = min_dist * 2;
@@ -202,8 +217,11 @@ public class FeatureMatching extends Configured implements Tool {
 
                         // Get the ratio of good_matches to all_matches
                         double ratio = (double) goodMatches.size() / (double) dMatches.length;
-                        System.out.printf("current_record_filename: %s --- ratio: %f   total_matches: %d    good_matches: %d\n",
-                                filename, ratio, dMatches.length, goodMatches.size());
+
+                        System.out.println("*** current_record_filename:"+filename+" ***");
+                        System.out.println("feature:" + descriptor + "\nquery_feature:" + query_features);
+                        System.out.println("min_dist of keypoints:" + min_dist + "  max_dist of keypoints:" + max_dist);
+                        System.out.println("total_matches:"+dMatches.length+"\tgood_matches:"+goodMatches.size());
 //                    System.out.println("type:" + descriptor.type() + " channels:" + descriptor.channels() + " rows:" + descriptor.rows() + " cols:" + descriptor.cols());
 //                    System.out.println("qtype:" + query_features.type() + " qchannels:" + query_features.channels() + " qrows:" + query_features.rows() + " qcols:" + query_features.cols());
                         System.out.println();
