@@ -15,7 +15,7 @@ jar {
 
 dependencies {
     compile 'com.google.code.gson:gson:2.4'
-    compile fileTree(dir: home+'/libs', include: ['*.jar'])
+    compile fileTree(dir: home+'/libs', include: ['*.*'])
     runtime fileTree(dir: home+'/libs', include: ['*.jar'])
     runtime fileTree(dir: home+'/libs', include: ['*.so'])
     testCompile 'junit:junit:4.12'
